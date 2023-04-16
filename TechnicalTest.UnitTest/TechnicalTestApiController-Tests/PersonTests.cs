@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using AutoFixture.Xunit2;
+using AutoMapper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using TechinicalTest.Api.Controllers;
 using TechnicalTest.Core.AppExceptions;
+using TechnicalTest.Core.DTOs;
 using TechnicalTest.Core.Entities;
 using TechnicalTest.Core.Interfaces;
 using TechnicalTest.Core.Responses;
@@ -60,11 +62,11 @@ namespace TechnicalTest.UnitTest.TechnicalTestApiController_Tests
 
             _personServicesMock.Verify(x => x.GetAllPerson(), Times.Once());
             objectResult.Should().BeEquivalentTo(new OkObjectResult(personList));
-            
+
         }
 
         [Fact]
-        public async Task Should_return_a_person_when_httpGet_recibed_Id()
+        public async Task Should_return_a_person_when_httpGet_recived_Id()
         {
             var person = new Person();
 
@@ -89,7 +91,52 @@ namespace TechnicalTest.UnitTest.TechnicalTestApiController_Tests
             _controller = new PersonController(_personServicesMock.Object, _mapper);
 
             Func<Task> result = async () => await _controller.GetPersonById(-95);
+            _personServicesMock.Verify(x => x.GetPersonById(-95), Times.Once());
             await result.Should().ThrowAsync<AppException>().WithMessage($"Doesn't exist any person with Id: -95");
+        }
+
+        [Xunit.Theory, AutoData]
+
+        public async Task Should_save_a_person_when_httpPost_have_data(PersonDto personDto)
+        {
+            personDto.DateOfBirth = new DateTime(2000, 01, 07);
+            _controller = new PersonController(_personServicesMock.Object, _mapper);
+
+            ActionResult<Person> result = await _controller.PostPerson(personDto);
+            var objectResult = result.Result as OkObjectResult;
+
+            objectResult.Should().BeEquivalentTo(new OkObjectResult(new ApiResponse<PersonDto>()
+            {
+                Data = personDto,
+                Message = "Added successfully"
+            }));
+        }
+
+        [Xunit.Theory, AutoData]
+        public async Task Should_throw_appException_when_httpPost_has_invalid_Data(PersonDto personDto)
+        {
+            personDto.DateOfBirth = new DateTime(2015, 01, 02);
+            _controller = new PersonController(_personServicesMock.Object, _mapper);
+
+            Func<Task> result = async () => await _controller.PostPerson(personDto);
+            await result.Should().ThrowAsync<AppException>().WithMessage("An error has occurred");
+
+        }
+
+        [Fact]
+        public async Task Should_delete_a_person_when_httpDelete_recived_id()
+        {
+            _controller = new PersonController(_personServicesMock.Object, _mapper);
+
+            ActionResult<Person> result = await _controller.Delete(12);
+            var objectresult = result.Result as OkObjectResult;
+
+            objectresult.Should().BeEquivalentTo(new OkObjectResult(new ApiResponse<PersonDto>()
+            {
+                Message = "Delete succesfully"
+            }));
+
+
         }
     }
 }
