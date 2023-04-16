@@ -36,7 +36,12 @@ namespace TechinicalTest.Api.Controllers
 
         public async Task<IActionResult> GetPersonById(int personId)
         {
-            var person = await _personServices.GetPersonById(personId);
+
+            var result = await _personServices.GetPersonById(personId) ?? throw new AppException($"Doesn't exist any person with Id: {personId}");
+            var person = new ApiResponse<Person>()
+            {
+                Data = result
+            };
             return Ok(person);
         }
 
@@ -52,7 +57,7 @@ namespace TechinicalTest.Api.Controllers
             if (!validationResult.IsValid)
             {
                 throw new AppException(
-                    "Ha ocurrido un error",
+                    "An error has occurred",
                     validationResult.Errors.Select(validation => new ErrorMessage
                     {
                         Message = validation.ErrorMessage,
@@ -63,7 +68,7 @@ namespace TechinicalTest.Api.Controllers
             var response = new ApiResponse<Person>()
             {
                 Data = person,
-                Message = "Registro agregado"
+                Message = "Added successfully"
             };
             return Ok(response);
         }
@@ -72,11 +77,18 @@ namespace TechinicalTest.Api.Controllers
 
         public async Task<IActionResult> Delete(int personId)
         {
-            var person = await _personServices.DeletePerson(personId);
+            var result = await _personServices.GetPersonById(personId);
+
+            if(result == null)
+            {
+                throw new AppException($"Doesn't exist any person with Id:{personId}");
+            }
+
+            _ = await _personServices.DeletePerson(personId);
 
             var response = new ApiResponse<PersonDto>()
             {
-                Message = "Registro eliminado"
+                Message = "Delete succesfully"
             };
             return Ok(response);
         }
@@ -87,6 +99,19 @@ namespace TechinicalTest.Api.Controllers
         {
             var personUpdate = _mapper.Map<Person>(personDto);
             personUpdate.Id = personId;
+
+            var validator = new PersonValidation();
+            var validationResult = validator.Validate(personDto);
+            if (!validationResult.IsValid)
+            {
+                throw new AppException(
+                    "An error has occurred",
+                    validationResult.Errors.Select(validation => new ErrorMessage
+                    {
+                        Message = validation.ErrorMessage,
+                        Code = validation.ErrorCode
+                    }));
+            }
 
             await _personServices.UpdatePerson(personUpdate);
             return Ok(personUpdate);

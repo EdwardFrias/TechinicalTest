@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TechinicalTest.Api.MiddleWare;
 using TechnicalTest.Core.Interfaces;
 using TechnicalTest.Infrastructure.Data;
 using TechnicalTest.Infrastructure.Repositories;
@@ -16,7 +17,8 @@ builder.Services.AddDbContext<EdwardTestContext>(options => options.UseSqlServer
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IPersonServices, PersonServices>();
+builder.Services.AddTransient<IPersonServices, PersonServices>();
+builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -34,6 +36,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.MapControllers();
 

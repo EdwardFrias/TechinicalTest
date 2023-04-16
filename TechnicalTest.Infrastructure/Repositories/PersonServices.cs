@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechnicalTest.Core.AppExceptions;
 using TechnicalTest.Core.Entities;
 using TechnicalTest.Core.Interfaces;
 using TechnicalTest.Infrastructure.Data;
@@ -25,7 +26,7 @@ namespace TechnicalTest.Infrastructure.Repositories
         }
         public async Task<Person> GetPersonById(int personId)
         {
-
+            
             var person = await _context.People.FirstOrDefaultAsync(x => x.Id == personId);
             return person;
         }
