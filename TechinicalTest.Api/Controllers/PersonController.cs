@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using TechnicalTest.Core.AppExceptions;
 using TechnicalTest.Core.DTOs;
 using TechnicalTest.Core.Entities;
 using TechnicalTest.Core.Interfaces;
 using TechnicalTest.Core.Responses;
 using TechnicalTest.Infrastructure.Repositories;
+using TechnicalTest.Infrastructure.Validations;
 
 namespace TechinicalTest.Api.Controllers
 {
@@ -43,6 +45,20 @@ namespace TechinicalTest.Api.Controllers
         {
             var person = _mapper.Map<Person>(personDto);
             await _personServices.InsertPerson(person);
+
+
+            var validator = new PersonValidation();
+            var validationResult = validator.Validate(personDto);
+            if (!validationResult.IsValid)
+            {
+                throw new AppException(
+                    "Ha ocurrido un error",
+                    validationResult.Errors.Select(validation => new ErrorMessage
+                    {
+                        Message = validation.ErrorMessage,
+                        Code = validation.ErrorCode
+                    }));
+            }
 
             var response = new ApiResponse<Person>()
             {
