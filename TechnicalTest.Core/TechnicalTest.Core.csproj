@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="AppExceptions\" />
-    <Folder Include="DTOs\" />
     <Folder Include="Responses\" />
   </ItemGroup>
 

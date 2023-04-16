@@ -19,7 +19,7 @@ namespace TechnicalTest.Infrastructure.Repositories
         }
         public async Task<IEnumerable<Person>> GetAllPerson()
         {
-            var persons = await  _context.People.ToListAsync();
+            var persons = await _context.People.ToListAsync();
             return persons;
         }
     }
