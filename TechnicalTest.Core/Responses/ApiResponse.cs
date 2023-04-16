@@ -6,9 +6,9 @@
         public ApiResponse()
         { }
 
-        public T Data { get; set; }
-        public string Message { get; set; }
-        public bool IsSuccess { get; set; } = true;
+        public T? Data { get; set; }
+        public string? Message { get; set; }
+        public bool? IsSuccess { get; set; } = true;
         public dynamic[] Errors { get; set; }
 
         public static ApiResponse<T> Fail(dynamic[] Errors, string message = "")

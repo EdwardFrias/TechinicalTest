@@ -9,7 +9,7 @@ namespace TechnicalTest.Core.AppExceptions
     public class ErrorMessage
     {
         public string? Message { get; set; }
-        public string Code { get; set; }
+        public string? Code { get; set; }
     }
 
 

@@ -26,7 +26,7 @@ namespace TechinicalTest.Api.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetPersons()
+        public async Task<ActionResult> GetPersons()
         {
             var person = await _personServices.GetAllPerson();
             return Ok(person);
@@ -34,10 +34,14 @@ namespace TechinicalTest.Api.Controllers
 
         [HttpGet("{personId}")]
 
-        public async Task<IActionResult> GetPersonById(int personId)
+        public async Task<ActionResult> GetPersonById(int personId)
         {
 
-            var result = await _personServices.GetPersonById(personId) ?? throw new AppException($"Doesn't exist any person with Id: {personId}");
+            var result = await _personServices.GetPersonById(personId);
+            if (result == null)
+            {
+                throw new AppException($"Doesn't exist any person with Id: {personId}");
+            }
             var person = new ApiResponse<Person>()
             {
                 Data = result
@@ -46,7 +50,7 @@ namespace TechinicalTest.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostPerson(PersonDto personDto)
+        public async Task<ActionResult> PostPerson(PersonDto personDto)
         {
             var person = _mapper.Map<Person>(personDto);
             await _personServices.InsertPerson(person);
@@ -75,11 +79,11 @@ namespace TechinicalTest.Api.Controllers
 
         [HttpDelete("{personId}")]
 
-        public async Task<IActionResult> Delete(int personId)
+        public async Task<ActionResult> Delete(int personId)
         {
             var result = await _personServices.GetPersonById(personId);
 
-            if(result == null)
+            if (result == null)
             {
                 throw new AppException($"Doesn't exist any person with Id:{personId}");
             }
@@ -95,7 +99,7 @@ namespace TechinicalTest.Api.Controllers
 
         [HttpPut("{personId}")]
 
-        public async Task<IActionResult> PutPerson(int personId,PersonDto personDto)
+        public async Task<ActionResult> PutPerson(int personId, PersonDto personDto)
         {
             var personUpdate = _mapper.Map<Person>(personDto);
             personUpdate.Id = personId;
