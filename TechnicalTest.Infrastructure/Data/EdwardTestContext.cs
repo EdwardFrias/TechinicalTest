@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using TechnicalTest.Core.Entities;
+using TechnicalTest.Infrastructure.Data.Configuration;
 
 namespace TechnicalTest.Infrastructure.Data
 {
@@ -21,15 +22,7 @@ namespace TechnicalTest.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Person>(entity =>
-            {
-                entity.Property(e => e.DateOfBirth).HasColumnType("datetime");
-
-                entity.Property(e => e.FullName)
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
-            });
-
+            modelBuilder.ApplyConfiguration(new PersonConfiguration());
         }
     }
 }

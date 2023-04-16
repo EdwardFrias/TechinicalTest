@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using TechnicalTest.Core.Interfaces;
 using TechnicalTest.Infrastructure.Data;
+using TechnicalTest.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,9 @@ builder.Services.AddDbContext<EdwardTestContext>(options => options.UseSqlServer
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IPersonServices, PersonServices>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
