@@ -54,8 +54,6 @@ namespace TechinicalTest.Api.Controllers
         public async Task<ActionResult> PostPerson(PersonDto personDto)
         {
             var person = _mapper.Map<Person>(personDto);
-            await _personServices.InsertPerson(person);
-
 
             var validator = new PersonValidation();
             var validationResult = validator.Validate(personDto);
@@ -69,6 +67,7 @@ namespace TechinicalTest.Api.Controllers
                         Code = validation.ErrorCode
                     }));
             }
+            await _personServices.InsertPerson(person);
 
             var response = new ApiResponse<Person>()
             {
