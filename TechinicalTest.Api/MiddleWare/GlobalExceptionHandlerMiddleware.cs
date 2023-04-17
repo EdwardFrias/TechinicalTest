@@ -29,12 +29,12 @@ namespace TechinicalTest.Api.MiddleWare
 
                 string json = JsonSerializer.Serialize(ApiResponse<string>.Fail(e.Message));
 
-                if (e is AppException)
+                if (e is AppException exception)
                 {
                     json = JsonSerializer.Serialize(
-                        ApiResponse<AppException>.Fail(((AppException)e).Errors.ToArray(), e.Message)
+                        ApiResponse<AppException>.Fail(exception.Errors.ToArray(), e.Message)
                         );
-                    context.Response.StatusCode = ((AppException)e).Code;
+                    context.Response.StatusCode = exception.Code;
                 }
 
                 await context.Response.WriteAsync(json);
