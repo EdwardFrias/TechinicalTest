@@ -26,6 +26,12 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+using (var scoped = app.Services.CreateScope())
+{
+    var dbcontext = scoped.ServiceProvider.GetRequiredService<EdwardTestContext>();
+    dbcontext.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 
     app.UseSwagger();
