@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TechnicalTest.Infrastructure.Data.Migrations
 {
-    public partial class TableChanges : Migration
+    public partial class CreateTableWithSQLLite : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,9 +13,9 @@ namespace TechnicalTest.Infrastructure.Data.Migrations
                 name: "Person",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FullName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FullName = table.Column<string>(type: "TEXT", unicode: false, maxLength: 100, nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>

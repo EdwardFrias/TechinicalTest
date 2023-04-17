@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 const string ConnectionName = "EdwardTest";
 var connectionString = builder.Configuration.GetConnectionString(ConnectionName);
 
-builder.Services.AddDbContext<EdwardTestContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddSqlite<EdwardTestContext>(connectionString);
 
 
 // Add services to the container.
