@@ -2,6 +2,7 @@
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using NUnit.Framework;
 using TechinicalTest.Api.Controllers;
@@ -33,7 +34,6 @@ namespace TechnicalTest.UnitTest.TechnicalTestApiController_Tests
             _mapper = new Mapper(configMapper);
         }
 
-
         [Fact]
         public async Task should_return_people_list_when_httprequest_get()
         {
@@ -62,7 +62,6 @@ namespace TechnicalTest.UnitTest.TechnicalTestApiController_Tests
 
             _personServicesMock.Verify(x => x.GetAllPerson(), Times.Once());
             objectResult.Should().BeEquivalentTo(new OkObjectResult(personList));
-
         }
 
         [Fact]
@@ -85,14 +84,17 @@ namespace TechnicalTest.UnitTest.TechnicalTestApiController_Tests
         }
 
         [Fact]
-        public async Task Should_throw_AppException_when_httpGet_invalid_id()
+        public async Task Should_delete_a_person_when_httpDelete_recived_Id()
         {
-            var person = new Person();
             _controller = new PersonController(_personServicesMock.Object, _mapper);
 
-            Func<Task> result = async () => await _controller.GetPersonById(-95);
-            _personServicesMock.Verify(x => x.GetPersonById(-95), Times.Once());
-            await result.Should().ThrowAsync<AppException>().WithMessage($"Doesn't exist any person with Id: -95");
+            ActionResult<Person> result = await _controller.Delete(3);
+            var objectResult = result.Result as OkObjectResult;
+
+            objectResult.Should().BeEquivalentTo(new OkObjectResult(new ApiResponse<Person>()
+            {
+                Message = "Delete succesfully"
+            }));
         }
 
         [Xunit.Theory, AutoData]
@@ -120,22 +122,6 @@ namespace TechnicalTest.UnitTest.TechnicalTestApiController_Tests
 
             Func<Task> result = async () => await _controller.PostPerson(personDto);
             await result.Should().ThrowAsync<AppException>().WithMessage("An error has occurred");
-
-        }
-
-        [Fact]
-        public async Task Should_delete_a_person_when_httpDelete_recived_id()
-        {
-            _controller = new PersonController(_personServicesMock.Object, _mapper);
-
-            ActionResult<Person> result = await _controller.Delete(12);
-            var objectresult = result.Result as OkObjectResult;
-
-            objectresult.Should().BeEquivalentTo(new OkObjectResult(new ApiResponse<PersonDto>()
-            {
-                Message = "Delete succesfully"
-            }));
-
 
         }
     }

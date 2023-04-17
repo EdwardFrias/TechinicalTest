@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using TechnicalTest.Core.AppExceptions;
 using TechnicalTest.Core.DTOs;
 using TechnicalTest.Core.Entities;
@@ -81,16 +82,9 @@ namespace TechinicalTest.Api.Controllers
 
         public async Task<ActionResult> Delete(int personId)
         {
-            var result = await _personServices.GetPersonById(personId);
-
-            if (result == null)
-            {
-                throw new AppException($"Doesn't exist any person with Id:{personId}");
-            }
-
             _ = await _personServices.DeletePerson(personId);
 
-            var response = new ApiResponse<PersonDto>()
+            var response = new ApiResponse<Person>()
             {
                 Message = "Delete succesfully"
             };
@@ -117,7 +111,12 @@ namespace TechinicalTest.Api.Controllers
                     }));
             }
 
-            await _personServices.UpdatePerson(personUpdate);
+            _ = await _personServices.UpdatePerson(personUpdate);
+            var response = new ApiResponse<Person>()
+            {
+                Data = personUpdate,
+                Message = "Succesfully Modified"
+            };
             return Ok(personUpdate);
         }
 
